@@ -1,19 +1,13 @@
-# Build stage
-FROM node:18 as build
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Development stage
-FROM build as development
 COPY package*.json ./
-RUN npm install
-COPY . .
-CMD ["npm", "run", "dev", "--", "--host"]
 
-# Production stage
-FROM build as production
-COPY package*.json ./
-RUN npm install --production
+RUN npm install
+
 COPY . .
-RUN npm run build
-CMD ["npm", "start"]
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "--host"]
