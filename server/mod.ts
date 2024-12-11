@@ -1,33 +1,41 @@
-import { Application, Router } from 'https://deno.land/x/oak/mod.ts';
-import { Pool } from 'https://deno.land/x/postgres/mod.ts';
+import { serve } from "https://deno.land/std@0.214.0/http/server.ts";
 
-const app = new Application();
-const router = new Router();
+const handler = async (request: Request): Promise<Response> => {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type"
+  };
 
-// Database connection
-const pool = new Pool({
-  user: 'postgres',
-  password: 'postgres',
-  database: 'iperf3_logs',
-  hostname: 'db',
-  port: 5432,
-}, 20);
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers });
+  }
 
-// CORS middleware
-app.use(async (ctx, next) => {
-  ctx.response.headers.set('Access-Control-Allow-Origin', '*');
-  ctx.response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  ctx.response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
-  await next();
-});
+  try {
+    if (request.method === "GET") {
+      return new Response(JSON.stringify({ status: "ok" }), { headers });
+    }
 
-// Routes
-router.get('/', (ctx) => {
-  ctx.response.body = 'Iperf3 API Server Running';
-});
+    if (request.method === "POST") {
+      const data = await request.json();
+      return new Response(JSON.stringify({
+        received: data,
+        status: "scheduled"
+      }), { headers });
+    }
 
-app.use(router.routes());
-app.use(router.allowedMethods());
+    return new Response("Method not allowed", {
+      status: 405,
+      headers
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers
+    });
+  }
+};
 
-console.log('Server running on http://localhost:8000');
-await app.listen({ port: 8000 });
+console.log("Server running on http://localhost:8000");
+await serve(handler, { port: 8000 });
