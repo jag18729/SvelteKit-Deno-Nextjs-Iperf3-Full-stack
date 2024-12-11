@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Colors
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+cat << EOL
+${BLUE}Iperf3 Dashboard Commands:${NC}
+
+./setup   - Initialize project
+./dev     - Start development
+./reset   - Reset everything
+./logs    - View logs
+./seed    - Add test data
+./help    - Show this help
+
+${BLUE}Common Issues:${NC}
+
+1. Port conflicts: Edit ports in .env
+2. Docker errors: Try ./reset
+3. Database issues: Check logs
+EOL

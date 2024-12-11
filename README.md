@@ -1,92 +1,75 @@
 # Iperf3 Network Testing Dashboard
 
-One-click setup for iperf3 network testing dashboard.
+A full-stack application for scheduling, running, and analyzing network performance tests using iperf3.
 
 ## Quick Start
 
 ```bash
-# 1. Clone the repository
+# 1. Clone & Enter Directory
 git clone https://github.com/jag18729/SvelteKit-Deno-Nextjs-Iperf3-Full-stack.git
 cd SvelteKit-Deno-Nextjs-Iperf3-Full-stack
 
-# 2. Run the setup script
-./setup.sh
+# 2. Run Setup
+./setup
 
-# 3. Start the application
-./start.sh
+# 3. Start Development
+./dev
 ```
 
-That's it! The application will be running at:
-- Frontend: http://localhost:5173
-- API: http://localhost:8000
-- Admin: http://localhost:3000
+That's it! Your development environment is running at:
+- 🌐 Dashboard: http://localhost:5173
+- ⚙️ API: http://localhost:8000
+- 📊 Admin: http://localhost:3000
 
-## Requirements
+## Features
 
-- Docker and Docker Compose (everything else runs in containers)
-- Port 5173, 8000, and 3000 available
-
-## What's Included
-
-- SvelteKit frontend with Tailwind CSS
-- Deno backend API
-- Next.js admin panel
-- PostgreSQL database
-- iperf3 server
-- Automatic setup and configuration
-- Data persistence
-- Basic authentication
-
-## Configuration
-
-All configuration is in `config.env`. The default settings work out of the box, but you can modify:
-
-```env
-# Database settings
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=iperf3_logs
-
-# iperf3 settings
-IPERF3_PORT=5201
-
-# Web ports
-FRONTEND_PORT=5173
-API_PORT=8000
-ADMIN_PORT=3000
-```
-
-## Architecture
-
-Everything runs in Docker containers:
-- `frontend`: SvelteKit application
-- `api`: Deno server
-- `admin`: Next.js admin panel
-- `db`: PostgreSQL database
-- `iperf3`: iperf3 server
+- 🔑 User Authentication & Management
+- 📅 Test Scheduling & Configuration
+- 📊 Real-time Results & Visualization
+- 🔄 Automated Test Execution
+- 📱 Responsive Design
 
 ## Development
 
-To run in development mode with hot reloading:
 ```bash
-./dev.sh
+# Reset everything (caution: deletes data)
+./reset
+
+# View logs
+./logs
+
+# Add test data
+./seed
 ```
 
-## Production
+## Project Structure
 
-For production deployment:
-```bash
-./deploy.sh
 ```
+├── frontend/     # SvelteKit UI
+├── server/       # Deno API
+├── admin/        # Admin Dashboard
+└── db/           # Database
+```
+
+## API Routes
+
+```
+/api/auth   - Authentication
+/api/tests  - Test Management
+/api/config - System Configuration
+```
+
+## Requirements
+
+- Docker & Docker Compose
+- That's it! Everything else runs in containers
 
 ## Troubleshooting
 
-View logs:
-```bash
-./logs.sh
-```
+1. Port conflicts? Edit `.env`
+2. Docker issues? Run `./reset`
+3. Need help? Run `./help`
 
-Reset everything:
-```bash
-./reset.sh
-```
+## License
+
+MIT

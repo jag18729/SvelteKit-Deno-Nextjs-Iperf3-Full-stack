@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Colors
+RED='\033[0;31m'
+NC='\033[0m'
+
+echo -e "${RED}Warning: This will reset everything to default${NC}"
+read -p "Continue? (y/N) " response
+
+if [[ "$response" =~ ^[Yy]$ ]]; then
+    docker compose down -v
+    rm -rf data/*
+    ./setup
+fi

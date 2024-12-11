@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Colors
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+echo -e "${GREEN}Starting development environment...${NC}"
+
+docker compose up -d
+
+echo -e "${GREEN}Services available at:${NC}"
+echo "📊 Dashboard: http://localhost:5173"
+echo "⚙️  API: http://localhost:8000"
+echo "🔧 Admin: http://localhost:3000"
+
+echo -e "\n${GREEN}Showing logs... (Ctrl+C to exit)${NC}"
+docker compose logs -f

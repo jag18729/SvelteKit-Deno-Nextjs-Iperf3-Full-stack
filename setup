@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Colors
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${BLUE}Setting up Iperf3 Dashboard...${NC}"
+
+# Make scripts executable
+chmod +x dev logs reset seed help
+
+# Create environment file if it doesn't exist
+if [ ! -f ".env" ]; then
+  cat > .env << EOL
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=iperf3_logs
+DB_USER=postgres
+DB_PASSWORD=postgres
+API_PORT=8000
+FRONTEND_PORT=5173
+ADMIN_PORT=3000
+JWT_SECRET=development-secret
+EOL
+fi
+
+# Start containers
+docker compose pull
+docker compose build
+
+echo -e "${GREEN}Setup complete! Run ./dev to start${NC}"
