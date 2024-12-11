@@ -1,5 +1,4 @@
-<script>
-  import { page } from '$app/stores';
+<script lang="ts">
   import { user } from '$lib/stores/auth';
 </script>
 

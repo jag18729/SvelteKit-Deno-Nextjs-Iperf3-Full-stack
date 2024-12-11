@@ -1,6 +1,15 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import type { UserConfig } from 'vite';
 
-export default defineConfig({
-	plugins: [sveltekit()]
-});
+const config: UserConfig = {
+  plugins: [sveltekit()],
+  server: {
+    host: true,
+    port: 5173,
+    watch: {
+      usePolling: true
+    }
+  }
+};
+
+export default config;
