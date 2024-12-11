@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: ./frontend
+      target: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  api:
+    build:
+      context: ./server
+      target: development
+    volumes:
+      - ./server:/app
+    command: deno run --watch --allow-net --allow-read --allow-env mod.ts
+
+  admin:
+    build:
+      context: ./admin
+      target: development
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+    command: npm run dev

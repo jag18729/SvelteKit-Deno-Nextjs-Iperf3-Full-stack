@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      - api
+
+  api:
+    build: ./server
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/iperf3_logs
+    depends_on:
+      - db
+
+  admin:
+    build: ./admin
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      - api
+
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=iperf3_logs
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  iperf3:
+    image: networkstatic/iperf3
+    ports:
+      - "5201:5201"
+    command: ["-s"]
+
+volumes:
+  db_data:
