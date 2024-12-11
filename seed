@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Colors
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${BLUE}Adding test data...${NC}"
+
+# Execute seed.sql inside the database container
+docker compose exec db psql -U postgres -d iperf3_logs -f /docker-entrypoint-initdb.d/seed.sql
+
+echo -e "${GREEN}Test data added!${NC}"
