@@ -3,24 +3,54 @@ services:
     build:
       context: ./frontend
       target: development
+    ports:
+      - "5173:5173"
+    environment:
+      - API_URL=http://api:8000
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    command: npm run dev
 
   api:
     build:
       context: ./server
       target: development
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/iperf3_logs
     volumes:
       - ./server:/app
-    command: deno run --watch --allow-net --allow-read --allow-env mod.ts
 
   admin:
     build:
       context: ./admin
       target: development
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://api:8000
     volumes:
       - ./admin:/app
       - /app/node_modules
-    command: npm run dev
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=iperf3_logs
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  iperf3:
+    image: networkstatic/iperf3
+    ports:
+      - "5201:5201"
+    command: ["-s"]
+
+volumes:
+  postgres_data:
