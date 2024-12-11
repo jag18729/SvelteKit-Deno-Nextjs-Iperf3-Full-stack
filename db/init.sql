@@ -2,43 +2,70 @@
 CREATE DATABASE iperf3_logs;
 \c iperf3_logs;
 
--- Create tables
-CREATE TABLE IF NOT EXISTS scheduled_tests (
+-- Users table
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    server_ip VARCHAR(255) NOT NULL,
-    bandwidth INTEGER NOT NULL,
-    duration INTEGER NOT NULL,
-    scheduled_time TIMESTAMP NOT NULL,
-    status VARCHAR(50) NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS test_results (
+-- Server configurations
+CREATE TABLE server_configs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    name VARCHAR(100) NOT NULL,
+    server_ip VARCHAR(255) NOT NULL,
+    port INTEGER DEFAULT 5201,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Test configurations
+CREATE TABLE test_configs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    name VARCHAR(100) NOT NULL,
+    bandwidth INTEGER,  -- in Mbps
+    duration INTEGER,   -- in seconds
+    parallel INTEGER DEFAULT 1,
+    reverse BOOLEAN DEFAULT false,
+    udp BOOLEAN DEFAULT false,
+    window_size VARCHAR(20),
+    mss INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Scheduled tests
+CREATE TABLE scheduled_tests (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    server_config_id INTEGER REFERENCES server_configs(id),
+    test_config_id INTEGER REFERENCES test_configs(id),
+    schedule_time TIMESTAMP,
+    repeat_interval VARCHAR(50), -- cron expression for repeating tests
+    status VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Test results
+CREATE TABLE test_results (
     id SERIAL PRIMARY KEY,
     test_id INTEGER REFERENCES scheduled_tests(id),
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
     bandwidth_achieved FLOAT,
     jitter FLOAT,
     packet_loss FLOAT,
-    test_time TIMESTAMP,
+    retransmits INTEGER,
     raw_data JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create indexes
-CREATE INDEX idx_scheduled_tests_time ON scheduled_tests(scheduled_time);
-CREATE INDEX idx_test_results_test_id ON test_results(test_id);
-
--- Create view for test summary
-CREATE VIEW test_summary AS
-SELECT 
-    st.id,
-    st.server_ip,
-    st.bandwidth as requested_bandwidth,
-    tr.bandwidth_achieved,
-    tr.jitter,
-    tr.packet_loss,
-    st.scheduled_time,
-    tr.test_time
-FROM scheduled_tests st
-LEFT JOIN test_results tr ON st.id = tr.test_id
-ORDER BY st.scheduled_time DESC;
+CREATE INDEX idx_user_email ON users(email);
+CREATE INDEX idx_server_configs_user ON server_configs(user_id);
+CREATE INDEX idx_test_configs_user ON test_configs(user_id);
+CREATE INDEX idx_scheduled_tests_user ON scheduled_tests(user_id);
+CREATE INDEX idx_test_results_test ON test_results(test_id);
