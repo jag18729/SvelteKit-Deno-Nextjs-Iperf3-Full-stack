@@ -1,17 +1,4 @@
 import { useEffect, useState } from 'react';
-import {
-  Box,
-  Container,
-  Heading,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Stack,
-  Text
-} from '@chakra-ui/react';
 
 interface TestResult {
   id: number;
@@ -28,51 +15,49 @@ export default function Home() {
   useEffect(() => {
     async function fetchTests() {
       try {
-        const response = await fetch('http://localhost:8000/api/tests');
+        const response = await fetch('http://localhost:8000/');
         const data = await response.json();
-        setTests(data);
+        setTests(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching tests:', error);
       }
     }
 
     fetchTests();
-    const interval = setInterval(fetchTests, 5000); // Refresh every 5 seconds
+    const interval = setInterval(fetchTests, 5000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <Container maxW="container.xl" py={8}>
-      <Stack spacing={8}>
-        <Heading>Iperf3 Test Dashboard</Heading>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Iperf3 Test Dashboard</h1>
 
-        <Box overflowX="auto">
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>ID</Th>
-                <Th>Server IP</Th>
-                <Th>Bandwidth (Mbps)</Th>
-                <Th>Duration (s)</Th>
-                <Th>Scheduled Time</Th>
-                <Th>Status</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {tests.map((test) => (
-                <Tr key={test.id}>
-                  <Td>{test.id}</Td>
-                  <Td>{test.server_ip}</Td>
-                  <Td>{test.bandwidth}</Td>
-                  <Td>{test.duration}</Td>
-                  <Td>{new Date(test.scheduled_time).toLocaleString()}</Td>
-                  <Td>{test.status}</Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Box>
-      </Stack>
-    </Container>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white shadow-md rounded-lg">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="px-6 py-3 text-left">ID</th>
+              <th className="px-6 py-3 text-left">Server IP</th>
+              <th className="px-6 py-3 text-left">Bandwidth (Mbps)</th>
+              <th className="px-6 py-3 text-left">Duration (s)</th>
+              <th className="px-6 py-3 text-left">Scheduled Time</th>
+              <th className="px-6 py-3 text-left">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tests.map((test) => (
+              <tr key={test.id} className="border-t">
+                <td className="px-6 py-4">{test.id}</td>
+                <td className="px-6 py-4">{test.server_ip}</td>
+                <td className="px-6 py-4">{test.bandwidth}</td>
+                <td className="px-6 py-4">{test.duration}</td>
+                <td className="px-6 py-4">{new Date(test.scheduled_time).toLocaleString()}</td>
+                <td className="px-6 py-4">{test.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
