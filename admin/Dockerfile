@@ -1,16 +1,20 @@
-# Development stage
 FROM node:18-alpine as development
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-EXPOSE 3000
-CMD ["npm", "run", "dev"]
 
-# Production stage
-FROM node:18-alpine as production
 WORKDIR /app
+
+# Copy package files
 COPY package*.json ./
-RUN npm install --production
+
+# Install all dependencies including devDependencies
+RUN npm install
+
+# Copy configuration files
+COPY postcss.config.js ./
+COPY tailwind.config.js ./
+
+# Copy the rest of the application
 COPY . .
-RUN npm run build
-CMD ["npm", "start"]
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
